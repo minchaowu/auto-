@@ -85,7 +85,8 @@ section prenex_equivalence
   iff.trans and.comm exists_of_exists_and_left
 
   theorem exists_of_exists_or_left : (∃ x, q x) ∨ p ↔ ∃ x, q x ∨ p := 
-  iff.intro (λ h, or.elim h (λ l, exists.elim l (λ x hx, exists.intro x (or.inl hx))) (λ r, exists.intro (default A) (or.inr r))) 
+  iff.intro (λ h, or.elim h (λ l, exists.elim l (λ x hx, exists.intro x (or.inl hx))) 
+    (λ r, exists.intro (default A) (or.inr r))) 
   (λ h, exists.elim h (λ x hx, or.elim hx (λ l, or.inl (exists.intro x l)) (λ r, or.inr r)))
 
   theorem exists_of_exists_or_right : p ∨ (∃ x, q x) ↔ ∃ x, q x ∨ p := 
@@ -93,7 +94,9 @@ section prenex_equivalence
 
 end prenex_equivalence
 
-meta def nnf_lemmas : list name := [``forall_not_of_not_exists, ``exists_not_of_not_forall, ``iff_eq, ``implies_iff_not_or, ``not_and_iff, ``not_or_iff, ``not_not_iff, ``not_true_iff, ``not_false_iff]
+meta def nnf_lemmas : list name := [``forall_not_of_not_exists, ``exists_not_of_not_forall, 
+                                ``iff_eq, ``implies_iff_not_or, ``not_and_iff, ``not_or_iff, 
+                                ``not_not_iff, ``not_true_iff, ``not_false_iff]
 
 meta def normalize_hyp (lemmas : list expr) (hyp : expr) : tactic unit :=
 do try (simp_at_using lemmas hyp)
@@ -103,7 +106,10 @@ do hyps ← local_context,
    lemmas ← monad.mapm mk_const nnf_lemmas,
    monad.for' hyps (normalize_hyp lemmas)
 
-meta def pnf_lemmas : list name := [``forall_p_iff_p, ``exists_p_iff_p, ``forall_of_forall_and_left, ``forall_of_forall_and_right, ``forall_of_forall_or_left, ``forall_of_forall_or_right, ``exists_of_exists_and_left, ``exists_of_exists_and_right, ``exists_of_exists_or_left, ``exists_of_exists_or_right]
+meta def pnf_lemmas : list name := [``forall_p_iff_p, ``exists_p_iff_p, ``forall_of_forall_and_left, 
+                             ``forall_of_forall_and_right, ``forall_of_forall_or_left, 
+                             ``forall_of_forall_or_right, ``exists_of_exists_and_left, 
+                             ``exists_of_exists_and_right, ``exists_of_exists_or_left, ``exists_of_exists_or_right]
 
 meta def pnf_hyps : tactic unit :=
 do hyps ← local_context,
