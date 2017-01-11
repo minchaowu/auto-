@@ -113,9 +113,7 @@ meta def pnf_lemmas : list name := [``forall_p_iff_p, ``exists_p_iff_p, ``forall
 
 meta def pnf_hyps : tactic unit :=
 do hyps ← local_context,
-   -- nnf_lemmas ← monad.mapm mk_const nnf_lemmas,
    pnf_lemmas ← monad.mapm mk_const pnf_lemmas,
-   -- monad.for' hyps (normalize_hyp nnf_lemmas),
    monad.for' hyps (normalize_hyp pnf_lemmas)
 
 example (p q r : Prop) (h₁ : ¬ (p ↔ (q ∧ ¬ r))) (h₂ : ¬ (p → (q → ¬ r))) : true :=
@@ -123,8 +121,11 @@ by do nnf_hyps,
       trace_state,
       triv
 
-example (A : Type) (p : Prop) (q : A → Prop) (h₁ : ¬ p → (∀ x, q x)) [inhabited A] : true :=
+-- TODO: think about the order of applying simp rules.
+
+example (A : Type) (p : Prop) (q : A → Prop) (h₁ : ¬ p → ((∀ x, q x) → p)) [inhabited A] : true :=
 by do nnf_hyps,
+      trace_state,
       pnf_hyps,
       trace_state,
       triv
